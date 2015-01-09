@@ -14,8 +14,9 @@ class Authenticator(object):
 	def __init__(self, client_id, client_secret, scope, tokens = None):
 		super(Authenticator, self).__init__()
 		
-		# when need to know who is authorized
-		scope.append('email')
+		# we need to know who is authorized
+		if not 'email' in scope:
+			scope.append('email')
 		
 		self.prefs = {
 			"access_type": "offline",
