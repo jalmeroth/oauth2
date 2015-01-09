@@ -43,7 +43,7 @@ class Authenticator(object):
 			user_token = tokens.get(user_Id)
 			if user_token:
 				refresh_token = user_token.get('refresh_token')
-				return self.refresh(refresh_token)
+				return self.refresh(refresh_token, user_Id)
 		else:
 			auth_uri = self.prefs.get('auth_uri')
 			
@@ -116,14 +116,14 @@ class Authenticator(object):
 		if result.ok:
 			return result.json()
 	
-	def refresh(self, token = None):
+	def refresh(self, token = None, user_Id = None):
 		"""docstring for refresh"""
 		token_uri = self.prefs.get("token_uri")
 		logger.debug("token: " + str(token))
 		
 		if not token:
 			# need to authorize first
-			return self.authorize()
+			return self.authorize(user_Id)
 		else:
 			payload = {
 				"refresh_token": token,
@@ -136,9 +136,9 @@ class Authenticator(object):
 			
 			if result.ok:
 				data = result.json()
-				return data.get('access_token')
+				return self.check_store_Token(user_Id, data.get('access_token'))
 			else:
-				return self.authorize()
+				return self.authorize(user_Id)
 	
 	def info(self, token):
 		"""docstring for info"""
@@ -197,7 +197,7 @@ class Authenticator(object):
 				return user_token.get('access_token')
 			else:
 				logger.info('Bearer: Token expired.')
-				return self.refresh(user_token.get('refresh_token'))
+				return self.refresh(user_token.get('refresh_token'), user_Id)
 			
 		else:
 			logger.info('Bearer: Token not found.')
