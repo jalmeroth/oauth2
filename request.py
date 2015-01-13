@@ -28,11 +28,31 @@ class WebRequest(object):
 		self.http_library = HTTP_library
 		self.request = None
 	
+	def queryString(self, url, params):
+		"""converts a dict of params into a query string of url"""
+		sep = "?"
+		# if url has a query string already, use ampersand as sep
+		if url.find(sep) > -1:
+			sep = "&"
+		# convert params into query string
+		url += sep + urllib.urlencode(params)
+		return url
+	
 	def makeRequestWithUrlfetch(self, url, **kwargs):
 		"""docstring for makeRequestWithUrlfetch"""
 		method = kwargs.pop('method', 'GET')
+		
+		# TODO implement json-type data payloads
+		
 		payload = kwargs.pop('data', {})
-		# print "fetch:", url, method, payload, kwargs.get('headers')
+		if isinstance(payload, dict):
+			payload = urllib.urlencode(payload)
+		
+		# if params where given, convert them into query string
+		params = kwargs.pop('params', None)
+		if params:
+			url = self.queryString(url, params)
+		
 		return urlfetch.fetch(url=url, method=method, payload=payload, **kwargs)
 	
 	def makeRequestWithRequests(self, url, **kwargs):
