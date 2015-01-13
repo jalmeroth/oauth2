@@ -139,6 +139,8 @@ class Authenticator(object):
 				data = result.json()
 				return self.check_store_Token(user_Id, data.get('access_token'))
 			else:
+				# removing token, prevents refreshing loops
+				self.tokens.pop(user_Id, None)
 				return self.authorize(user_Id)
 	
 	def info(self, token):
