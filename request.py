@@ -114,7 +114,7 @@ class WebRequest(object):
 	@property
 	def ok(self):
 		"""docstring for ok"""
-		ok_codes = (200, 201)
+		ok_codes = (200, 201, 207)
 		return self.status_code in ok_codes
 
 def main():
