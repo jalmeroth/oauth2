@@ -402,7 +402,7 @@ class ServiceAuthenticator(object):
                 return user_token.get('access_token')
             else:
                 logger.info('Bearer: Token expired.')
-                return self.refresh(user_token.get('refresh_token'), user_Id)
+                return self.authorize(user_Id)
             
         else:
             logger.info('Bearer: Token not found.')
