@@ -3,11 +3,12 @@ import json
 import time
 import urllib
 import logging
+import crypt as crypt
 logger = logging.getLogger(__name__)
 
 from request import WebRequest
 from helpers import shorten
-from Google import crypt
+
 
 class Authenticator(object):
     """docstring for Authenticator"""
