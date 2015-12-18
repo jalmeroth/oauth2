@@ -224,7 +224,7 @@ class Authenticator(AuthBase):
             
             if result.ok:
                 data = result.json()
-                return self.check_store_Token(user_Id, data.get('access_token'))
+                return self.check_store_Token(user_Id, data)
             else:
                 # removing token, prevents refreshing loops
                 self.tokens.pop(user_Id, None)
