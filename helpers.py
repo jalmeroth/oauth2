@@ -10,23 +10,29 @@ def work_dir(path = '../'):
     """docstring for _work_dir"""
     return os.path.dirname(os.path.realpath(os.path.join(__file__, path)))
 
-def save(data, filename):
+def save(data, filename, isJson = True):
     """docstring for save"""
     file = os.path.join(work_dir(), filename)
     
     if not os.path.exists(os.path.dirname(file)):
         os.makedirs(os.path.dirname(file))
     
-    with open(file, "w+") as jsonFile:
-        json.dump(data, jsonFile)
+    with open(file, "w+") as fileObj:
+        if isJson:
+            json.dump(data, fileObj)
+        else:
+            fileObj.write(data)
 
-def load(filename):
+def load(filename, isJson = True):
     """docstring for load"""
     file = os.path.join(work_dir(), filename)
     
     if os.path.exists(file):
-        with open(file,"r") as jsonFile:
-            return json.load(jsonFile)
+        with open(file,"r") as fileObj:
+            if isJson:
+                return json.load(fileObj)
+            else:
+                return fileObj.read()
     else:
         return {}
 
