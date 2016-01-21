@@ -55,23 +55,26 @@ class AuthBase(object):
         user_email = info.get('email')
         logger.debug('user_email: %s', user_email)
         
-        if user_email == user_Id:
-            
-            existingToken = self.tokens.get(user_Id, {})
-            
-            #overwrite expires with actual time -5 min.
-            fiveMin = 5 * 60
-            expires_in = int(data.get('expires_in', 0))
-            timeNow = int(time.time())
-            expires = timeNow + expires_in - fiveMin
-            data["expires"] = expires
-            
-            # update to new values while preserving other existing key/values
-            existingToken.update(data)
-            self.tokens[user_Id] = existingToken
+        # let the user decide, which account he uses on consent screen
+        if user_Id is None:
+            user_Id = user_email
         
-        else:
+        # warn if user chose, different account then requested
+        if user_email != user_Id:
             logger.warning("User mismatch: you will have to re-authenticate next time.")
+            
+        existingToken = self.tokens.get(user_Id, {})
+        
+        #overwrite expires with actual time -5 min.
+        fiveMin = 5 * 60
+        expires_in = int(data.get('expires_in', 0))
+        timeNow = int(time.time())
+        expires = timeNow + expires_in - fiveMin
+        data["expires"] = expires
+        
+        # update to new values while preserving other existing key/values
+        existingToken.update(data)
+        self.tokens[user_Id] = existingToken
         
         return access_token
     
