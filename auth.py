@@ -18,18 +18,18 @@ URI_REVOKE = "https://accounts.google.com/o/oauth2/revoke"
 
 class AuthBase(object):
     """docstring for AuthBase"""
-    def __init__(self, **kwargs):
+    def __init__(self, scope = [], tokens = {}, *args, **kwargs):
         super(AuthBase, self).__init__()
         
         # we need to know who is goint to be authorized
-        scope = kwargs.get('scope', [])
         if not 'email' in scope:
             scope.append('email')
         
         logger.debug("scope %s", scope)
         
-        self.tokens = kwargs.get('tokens', {})
+        self.tokens = tokens
         self.prefs = kwargs.get('prefs', {})
+        self.api_key = kwargs.get('api_key', None)
         
         self.prefs["scope"] = " ".join(scope)
         self.prefs["auth_uri"] = URI_AUTH
@@ -144,8 +144,8 @@ class AuthBase(object):
 
 class Authenticator(AuthBase):
     """docstring for Authenticator"""
-    def __init__(self, client_id, client_secret, scope, tokens = {}):
-        super(Authenticator, self).__init__(scope=scope, tokens=tokens)
+    def __init__(self, client_id, client_secret, *args, **kwargs):
+        super(Authenticator, self).__init__(*args, **kwargs)
         
         prefs = {
             "access_type": "offline",
@@ -179,7 +179,7 @@ class Authenticator(AuthBase):
             }
             
             longUri = auth_uri + "?" + urllib.urlencode(params)
-            shortUri = shorten(longUri)
+            shortUri = shorten(longUri, self.api_key)
             
             print 10 * "=", "Authorizing account:", (user_Id if user_Id else "n/a")
             print "Go to the following link in your browser:", shortUri if shortUri else longUri
@@ -236,8 +236,8 @@ class Authenticator(AuthBase):
 
 class ServiceAuthenticator(AuthBase):
     """docstring for ServiceAuthenticator"""
-    def __init__(self, client_email, private_key, scope, tokens = {}):
-        super(ServiceAuthenticator, self).__init__(scope=scope, tokens=tokens)
+    def __init__(self, client_email, private_key, *args, **kwargs):
+        super(ServiceAuthenticator, self).__init__(*args, **kwargs)
         
         prefs = {
             'client_email': client_email,
