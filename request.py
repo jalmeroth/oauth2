@@ -58,6 +58,7 @@ class WebRequest(object):
     def makeRequestWithRequests(self, url, **kwargs):
         """docstring for makeRequestWithRequests"""
         method = kwargs.pop('method', 'GET')
+        kwargs.pop('deadline', None)
         logger.info('method:' + method)
         logger.info('kwargs:' + str(kwargs))
         return requests.request(method, url, **kwargs)
